@@ -112,7 +112,6 @@ class ReflexAgent(Agent):
         z = newFood.count()
         # number of ghosts remained
         t = len(newGhostPos)
-        a, b, c, d = 1, 100, 1, 1
         score = y / x - 100 * (t + z)
         successorGameState.data.score = score
         return successorGameState.getScore()
@@ -329,7 +328,31 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    state = currentGameState
+    newPos = state.getPacmanPosition()
+    newFood = state.getFood()
+    capsules = state.getCapsules()
+    newFoodPos = [(x, y) for x in range(newFood.width) for y in range(newFood.height) if newFood[x][y]]
+    newGhostStates = state.getGhostStates()
+    newGhostPos = state.getGhostPositions()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+    "*** YOUR CODE HERE ***"
+    if state.isWin():
+        return 100000.0 + state.getScore()
+    if state.isLose():
+        return -100000.0 - state.getScore()
+    # get mean distance to Food
+    x = getScore(newPos, newFoodPos, util.manhattanDistance)
+    # get distance to Ghost
+    y = getScore(newPos, newGhostPos, util.manhattanDistance)
+    # number of food remained
+    z = newFood.count()
+    # number of ghosts remained
+    t = len(newGhostPos)
+    # get number of capsules
+    u = len(capsules)
+    score = y / x - 10.0 * (1000 * t + 10.0 * z + 10 * u)
+    return state.getScore() + score
 
 # Abbreviation
 better = betterEvaluationFunction
